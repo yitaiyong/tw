@@ -1,0 +1,11 @@
+Package: tw
+Type: Package
+Title: Taiwan Wallstreet
+Version: 0.0.0.1
+Author: yitaiyong
+Maintainer: yitaiyong <yitaiyong@outlook.com>
+Description: Some tools for Taiwan stock market.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
