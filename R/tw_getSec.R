@@ -310,8 +310,8 @@ getAllSec <- function() {
 #' @export
 #' @examples
 #' tw_getSec()
-#' tw_getSec(stockonly = FALSE)
-tw_getSec <- function(stockonly = TRUE) {
+#' tw_getSec(stockonly = TRUE)
+tw_getSec <- function(stockonly = FALSE) {
   allsec <- getAllSec()
   function() {
     if (!stockonly) return(allsec)
