@@ -300,17 +300,7 @@ getAllSec <- function() {
 
 
 
-#' Taiwan securities list.
-#'
-#' @param stockonly a boolean value default FALSE for all securities,
-#'   if TRUE the output limited to only stocks#'
-#' @return a tibble contains following variables: no, title, dated,
-#'   sec_type, sec_symbol, sec_name, isin_code, start_date, end_date,
-#'   intr_rate, market, sector, cfi_code, remark.
-#' @export
-#' @examples
-#' tw_getSec()
-#' tw_getSec(stockonly = TRUE)
+
 tw_getSec <- function(stockonly = FALSE) {
   allsec <- getAllSec()
   function() {
@@ -325,4 +315,29 @@ tw_getSec <- function(stockonly = FALSE) {
   }
 }()
 
+#' Taiwan all securities list.
+#'
+#' @return a tibble contains following variables: no, title, dated,
+#'   sec_type, sec_symbol, sec_name, isin_code, start_date, end_date,
+#'   intr_rate, market, sector, cfi_code, remark.
+#' @export
+#' @examples
+#' tw_getAllSec()
+tw_getAllSec <- function() tw_getSec()
 
+
+#' Taiwan stocks list.
+#'
+#' @return a tibble contains following columns:
+#'   market, sec_symbol, sec_name, isin_code, start_date, sector.
+#' @export
+#' @examples
+#' tw_getStocks()
+tw_getStocks <- function() {
+  tw_getSec() %>%
+    dplyr::filter(
+      no %in% c(2, 4, 5),
+      market %in% c("上市", "上櫃", "興櫃"),
+      sec_type == "股票") %>%
+    dplyr::select(market, sec_symbol, sec_name, isin_code, start_date, sector)
+}
