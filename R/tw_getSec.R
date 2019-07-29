@@ -1,9 +1,5 @@
 
 
-`%>%` <- magrittr::`%>%`
-`%!in%` <- Negate(`%in%`)
-
-
 getWebPage <- function(url, encoding = "UTF-8") {
   con <- curl::curl(url)
   out <- con %>%
