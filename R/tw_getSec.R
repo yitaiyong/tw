@@ -337,3 +337,33 @@ tw_getStocks <- function() {
       sec_type == "股票") %>%
     dplyr::select(market, sec_symbol, sec_name, isin_code, start_date, sector)
 }
+
+
+#' Taiwan TWSE stocks list.
+#'
+#' @return a tibble contains following columns:
+#'   sec_symbol, sec_name, isin_code, start_date, sector.
+#' @export
+#' @examples
+#' tw_getStocks()
+tw_twse <- function() {
+  tw_getStocks() %>%
+    dplyr::filter(market == "上市") %>%
+    dplyr::select(-market)
+}
+
+
+
+#' Taiwan TPEX stocks list.
+#'
+#' @return a tibble contains following columns:
+#'   sec_symbol, sec_name, isin_code, start_date, sector.
+#' @export
+#' @examples
+#' tw_getStocks()
+tw_tpex <- function() {
+  tw_getStocks() %>%
+    dplyr::filter(market == "上櫃") %>%
+    dplyr::select(-market)
+}
+
