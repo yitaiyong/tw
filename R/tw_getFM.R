@@ -73,10 +73,21 @@ getTaiwanStockStockDividend <- function(symbolvec, datefrom) {
         "date" = datefrom),
       encode = "json")
 
-  out <- resp %>%
+  tmp <- resp %>%
     httr::content() %>%
     magrittr::extract2("data") %>%
-    tibble::as_tibble() %>%
+    tibble::as_tibble()
+
+  for (i in seq_len(nrow(tmp))) {
+    if (is.null(tmp$Ex_dividend_transaction_day[[i]])) {
+      tmp$Ex_dividend_transaction_day[[i]] <- NA_character_
+    }
+    if (tmp$Ex_right_trading_day[[i]] == "None") {
+      tmp$Ex_right_trading_day[[i]] <- NA_character_
+    }
+  }
+
+  out <- tmp %>%
     dplyr::mutate_all(unlist)
 
   out
