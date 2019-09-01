@@ -11,6 +11,7 @@ tw_getCMoney(symbolvec)
 }
 \value{
 a list contains financial statements, ratios and monthly revenues.
+# @export
 }
 \description{
 Taiwan stock info from CMoney.

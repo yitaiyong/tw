@@ -168,7 +168,7 @@ getCMoney <- function(symbolvec) {
 #'
 #' @param symbolvec a numeric symbol vector.
 #' @return a list contains financial statements, ratios and monthly revenues.
-#' @export
+#' # @export
 #' @examples
 #' tw_getCMoney(2330)
 #' tw_getCMoney(c(2330, 2886, 3008))

@@ -1,7 +1,7 @@
 Package: tw
 Type: Package
 Title: Taiwan Wallstreet
-Version: 0.0.0.1.4
+Version: 0.0.0.1.5
 Author: yitaiyong
 Maintainer: yitaiyong <yitaiyong@outlook.com>
 Description: Some tools for Taiwan stock market.
