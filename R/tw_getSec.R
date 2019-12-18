@@ -87,14 +87,14 @@ getTableText <- function(x) {
   out
 }
 
+
 tidy01 <- function(df) {
   df %>%
     dplyr::slice(-1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
-
 
 tidy02 <- function(df) {
   df %>%
@@ -103,7 +103,7 @@ tidy02 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -114,9 +114,9 @@ tidy03 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3),
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character(),
                   var4 = dplyr::if_else(var4 == "無到期日", "9999/12/31", var4) %>%
-                    lubridate::ymd()) %>%
+                    lubridate::ymd() %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -127,7 +127,7 @@ tidy04 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -138,7 +138,7 @@ tidy05 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -149,7 +149,7 @@ tidy06 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -157,7 +157,7 @@ tidy07 <- function(df) {
   df %>%
     dplyr::slice(-1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -168,7 +168,7 @@ tidy08 <- function(df) {
     tidyr::fill(var0) %>%
     dplyr::filter(var0 != var1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -176,14 +176,14 @@ tidy09 <- function(df) {
   df %>%
     dplyr::slice(-1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
 tidy10 <- function(df) {
   df %>%
     dplyr::slice(-1) %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -191,7 +191,7 @@ tidy11 <- function(df) {
   df %>%
     dplyr::slice(-1) %>%
     tidyr::separate(col = var1, into = c("var1_1", "var1_2"), sep = "　") %>%
-    dplyr::mutate(var3 = lubridate::ymd(var3)) %>%
+    dplyr::mutate(var3 = lubridate::ymd(var3) %>% as.character()) %>%
     dplyr::select(sort(names(.)))
 }
 
@@ -218,7 +218,7 @@ getAllSec <- function() {
 
   d$title <- purrr::map_chr(d$htmtxt, ~ getTableTitle(.x))
 
-  d$dated <- purrr::map_chr(d$htmtxt, ~ getDataDate(.x)) %>% lubridate::ymd()
+  d$dated <- purrr::map_chr(d$htmtxt, ~ getDataDate(.x)) %>% lubridate::ymd() %>% as.character()
 
   d$tbltxt <- purrr::map_chr(d$htmtxt, ~ getTableText(.x))
 
@@ -366,4 +366,70 @@ tw_tpex <- function() {
     dplyr::filter(market == "上櫃") %>%
     dplyr::select(-market)
 }
+
+
+
+
+
+
+
+
+#' setup a sqlite db and populate with balance sheet, income statement, monthly revenue, stock price, split and dividend of listed stocks in twse and tpex market.
+#'
+#' @param dbname a path to locate the sqlite db.
+#' @return a list of objects, tables, and fields of securities
+#' @export
+#' @examples
+#' tw_secdb()
+tw_secdb <- function(dbname = "./../data/db/sec") {
+
+  dbexist <- fs::file_exists(path = dbname)
+
+  sec_con <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbname)
+
+  new <- getAllSec() %>% dplyr::mutate(update = lubridate::now() %>% as.numeric())
+
+  if (dbexist) {
+    old <- DBI::dbReadTable(sec_con, "seclist")
+    upd <- dplyr::bind_rows(new, old) %>%
+      arrange(isin_code, desc(update)) %>%
+      mutate(isin_dup = duplicated(isin_code)) %>%
+      filter(isin_dup == FALSE) %>%
+      select(-isin_dup)
+  } else {
+    upd <- new
+  }
+
+  DBI::dbWriteTable(sec_con, "seclist", upd, append = FALSE, temporary = FALSE)
+
+  fs::file_copy(
+    path = dbname,
+    new_path = stringr::str_c(dbname, "_",
+                              lubridate::now() %>% as.character() %>%
+                                str_replace(pattern = " ", replacement = "_") %>%
+                                str_replace_all(":", "-")))
+
+  out <- list(
+    # DBI::dbGetInfo(sec_con), # this function is deprecated
+    DBI::dbListObjects(sec_con),
+    DBI::dbListTables(sec_con),
+    DBI::dbListFields(sec_con, "seclist")
+  )
+
+  DBI::dbDisconnect(sec_con)
+
+  out
+}
+
+
+
+
+
+
+
+
+
+
+
+
 

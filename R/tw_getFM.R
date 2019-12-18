@@ -430,3 +430,168 @@ tw_FM_MonthlyRevenue <- function(symbolvec, datefrom) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' setup a sqlite db and populate with balance sheet, income statement, monthly revenue, stock price, split and dividend of listed stocks in twse and tpex market.
+#'
+#' @param dbname a path to locate the sqlite db.
+#' @return a list of objects, tables, and fields of
+#'   balance sheet, income statement, monthly revenue, stock price, split and dividend tables.
+#' @export
+#' @examples
+#' tw_fmdb()
+
+tw_fmdb <- function(dbname = "./../data/db/fm") {
+
+  if (fs::file_exists("./../data/db/sec")) {
+
+    sec_con <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = "./../data/db/sec")
+    secdatedmax <- DBI::dbReadTable(sec_con, "seclist") %>%
+      dplyr::pull(dated) %>% max()
+    DBI::dbDisconnect(sec_con)
+    rm(sec_con)
+
+    if (lubridate::today() > secdatedmax) tw_secdb()
+
+    sec_con <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = "./../data/db/sec")
+
+    # sec_symbol in 上市(twse) and 上櫃(tpex) market
+    twtp <-
+      DBI::dbReadTable(sec_con, "seclist") %>%
+      dplyr::filter(
+        dated == lubridate::today(),
+        no %in% c(2, 4, 5),
+        market %in% c("上市", "上櫃"),
+        sec_type == "股票") %>%
+      dplyr::pull(sec_symbol)
+
+    DBI::dbDisconnect(sec_con)
+    rm(sec_con)
+  }
+
+  datefrom = "1999-12-31"
+
+  fm_con <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbname)
+
+  for (i in seq_along(twtp)) {
+
+    balance <- tw_FM_BalanceSheet(twtp[i], datefrom) %>%
+      dplyr::mutate(update = lubridate::now())
+    DBI::dbWriteTable(fm_con, "balance", balance, append = TRUE, temporary = FALSE)
+    print(stringr::str_c("symbol: ", twtp[i], "'s balance sheet fetched."))
+
+    income <- tw_FM_IncomeStatement(twtp[i], datefrom) %>%
+      dplyr::mutate(update = lubridate::now())
+    DBI::dbWriteTable(fm_con, "income", income, append = TRUE, temporary = FALSE)
+    print(stringr::str_c("symbol: ", twtp[i], "'s income statement fetched."))
+
+    revenue <- tw_FM_MonthlyRevenue(twtp[i], datefrom) %>%
+      dplyr::mutate(update = lubridate::now())
+    DBI::dbWriteTable(fm_con, "revenue", revenue, append = TRUE, temporary = FALSE)
+    print(stringr::str_c("symbol: ", twtp[i], "'s monthly revenue fetched."))
+
+    price <- tw_FM_StockPrice(twtp[i], datefrom) %>%
+      dplyr::mutate(update = lubridate::now())
+    DBI::dbWriteTable(fm_con, "price", price, append = TRUE, temporary = FALSE)
+    print(stringr::str_c("symbol: ", twtp[i], "'s stock price fetched."))
+
+    dividend <- tw_FM_StockSplitDividend(twtp[i], datefrom) %>%
+      dplyr::mutate(update = lubridate::now())
+    DBI::dbWriteTable(fm_con, "dividend", dividend, append = TRUE, temporary = FALSE)
+    print(stringr::str_c("symbol: ", twtp[i], "'s split dividend fetched."))
+
+  }
+
+  out <- list(
+    DBI::dbGetInfo(fm_con),
+    DBI::dbListObjects(fm_con),
+    DBI::dbListTables(fm_con),
+    DBI::dbListFields(fm_con, "balance"),
+    DBI::dbListFields(fm_con, "income"),
+    DBI::dbListFields(fm_con, "revenue"),
+    DBI::dbListFields(fm_con, "price"),
+    DBI::dbListFields(fm_con, "dividend")
+  )
+
+  out
+
+  DBI::dbDisconnect(fm_con)
+
+}
+
+
+
+
+
+# lubridate::now() %>% as.numeric() %>% as.POSIXct(origin = "1970-01-01")
+
+
+
+
+
+
+# tw_secdb <- function(dbname = "./../data/db/sec") {
+#
+#   dbexist <- fs::file_exists(path = dbname)
+#
+#   sec_con <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbname)
+#
+#   new <- getAllSec() %>% dplyr::mutate(update = lubridate::now() %>% as.numeric())
+#
+#   if (dbexist) {
+#     old <- DBI::dbReadTable(sec_con, "seclist")
+#     upd <- dplyr::bind_rows(new, old) %>%
+#       arrange(isin_code, desc(update)) %>%
+#       mutate(isin_dup = duplicated(isin_code)) %>%
+#       filter(isin_dup == FALSE) %>%
+#       select(-isin_dup)
+#   } else {
+#     upd <- new
+#   }
+#
+#   DBI::dbWriteTable(sec_con, "seclist", upd, append = FALSE, temporary = FALSE)
+#
+#   fs::file_copy(
+#     path = dbname,
+#     new_path = stringr::str_c(dbname, "_",
+#                               lubridate::now() %>% as.character() %>%
+#                                 str_replace(pattern = " ", replacement = "_") %>%
+#                                 str_replace_all(":", "-")))
+#
+#   out <- list(
+#     # DBI::dbGetInfo(sec_con), # this function is deprecated
+#     DBI::dbListObjects(sec_con),
+#     DBI::dbListTables(sec_con),
+#     DBI::dbListFields(sec_con, "seclist")
+#   )
+#
+#   DBI::dbDisconnect(sec_con)
+#
+#   out
+# }
+
+
+
+
